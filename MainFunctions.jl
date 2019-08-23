@@ -169,13 +169,13 @@ end
       else
           pifun = coauthpi
       end
-      pnhist = zeros(generations); ##initialize arrays to record history
-      prhist = zeros(generations);
-      typehist = zeros(generations);
-      degreehist = zeros(generations);
-      payoffhist = zeros(generations);
-      prs = clamp.(randn(netsize)*sigmapr+pr,0,1);
-      pns = clamp.(randn(netsize)*sigmapn+pn,0,1);
+      pnhist = zeros(generations) ##initialize arrays to record history
+      prhist = zeros(generations)
+      typehist = zeros(generations)
+      degreehist = zeros(generations)
+      payoffhist = zeros(generations)
+      prs = clamp.(randn(netsize)*sigmapr .+ pr, 0, 1)
+      pns = clamp.(randn(netsize)*sigmapn .+ pn, 0, 1)
       for i in 1:(generations*retint)
         netw, types, pns, prs = funevollink(netw,types,pns,prs,netsize,b,c,mu,mulink,sigmapn,sigmapr,clink,d,delta,payfun)
         if mod(i,retint)==0
@@ -251,8 +251,8 @@ end
       typeshist = zeros(Int,(netsize,div(generations,netsaveint)));
       pnshist = zeros(Float64,(netsize, div(generations, netsaveint)))
       prshist = zeros(Float64,(netsize, div(generations, netsaveint)))
-      prs = clamp.(randn(netsize)*sigmapr+pr,0,1);
-      pns = clamp.(randn(netsize)*sigmapn+pn,0,1);
+      prs = clamp.(randn(netsize)*sigmapr .+ pr, 0, 1)
+      pns = clamp.(randn(netsize)*sigmapn .+ pn, 0, 1)
       for i in 1:(generations*retint)
         netw, types, pns, prs = funevollink(netw,types,pns,prs,netsize,b,c,mu,mulink,sigmapn,sigmapr,clink,d,delta,payfun)
         if mod(i,retint)==0
