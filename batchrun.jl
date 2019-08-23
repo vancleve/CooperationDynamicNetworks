@@ -25,7 +25,6 @@ for p in 1:nsets
     #make a list of the argument to be passed on to main.jl
     arguments = ["sbatch", "--job-name", "network_coop_" * numstr, "--output", basename * string(p)* ".out", "--wrap", simstr]
 
-    # run(`$arguments`)
-    print(arguments)
+    run(`$arguments`)
 
 end
