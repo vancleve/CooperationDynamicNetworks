@@ -7,10 +7,10 @@
 include("MainFunctions.jl")
 
 using ArgParse
-using JLD
+using FileIO
 
 ## Parameter object
-type NetworkParam
+struct NetworkParam
 
     pn::Float64
     pr::Float64
@@ -34,8 +34,11 @@ type NetworkParam
     networksaveint::Int64
 
     # Constructor. Takes keyword arguments to make it easier to call with command line arguments
-    NetworkParam(;pn::Float64=0.5, pr::Float64=0.1, netsize::Int64=100, generations::Int64=100, b::Float64=1.0, c::Float64=0.5, d::Float64=0.0, mu::Float64=0.01, evollink::Bool=false, mulink::Float64=0.0, sigmapn::Float64=0.05, sigmapr::Float64=0.01,clink::Float64=0.0,retint::Int64=0, funnoevollink::String="Coauthor", funevollink::String="Coauthor", delta::Float64=1.0, payfun::String="Lin", replicates::Int64=1, networksaveint::Int64=1) = new(pn, pr, netsize, generations, b, c, d, mu, evollink, mulink, sigmapn, sigmapr, clink, retint, funnoevollink, funevollink, delta, payfun, replicates, networksaveint)
-
+    NetworkParam(;pn::Float64=0.5, pr::Float64=0.1, netsize::Int64=100, generations::Int64=100,
+                  b::Float64=1.0, c::Float64=0.5, d::Float64=0.0, mu::Float64=0.01, evollink::Bool=false,
+                  mulink::Float64=0.0, sigmapn::Float64=0.05, sigmapr::Float64=0.01,clink::Float64=0.0,
+                  retint::Int64=0, funnoevollink::String="Coauthor", funevollink::String="Coauthor",
+                  delta::Float64=1.0, payfun::String="Lin", replicates::Int64=1, networksaveint::Int64=1) = new(pn, pr, netsize, generations, b, c, d, mu, evollink, mulink, sigmapn, sigmapr, clink, retint, funnoevollink, funevollink, delta, payfun, replicates, networksaveint)
 end
 
 ### Defining the parameters, default values, and help text.
@@ -145,7 +148,7 @@ function main()
 
   sim_params = Dict()
   for (arg, val) in sim_args
-      sim_params[parse(arg)] = val
+      sim_params[Symbol(arg)] = val
   end
   params = NetworkParam(;sim_params...)
 
@@ -177,7 +180,7 @@ function main()
       for i in 1:params.replicates
           typehist, pnhist, prhist, degreehist, payoffhist, finnet, fintype, pnshist, prshist = simfun(;pn=params.pn, pr=params.pr, netsize=params.netsize, generations=params.generations, b=params.b, c=params.c, d=params.d, mu=params.mu, evollink=params.evollink, mulink=params.mulink, sigmapn=params.sigmapn, sigmapr=params.sigmapr, clink=params.clink, retint=params.retint, funnoevollink=funnoevollinkin, funevollink=funevollinkin, delta=params.delta,payfun=payfunin,netsaveint=params.networksaveint)
 
-          file = ismatch(r"\.jl", parsed_args["file"]) ? parsed_args["file"] : parsed_args["file"]*"-"*lpad(string(i), length(digits(params.replicates)), "0")*".jld"
+          file = occursin(r"\.jl", parsed_args["file"]) ? parsed_args["file"] : parsed_args["file"]*"-"*lpad(string(i), length(digits(params.replicates)), "0")*".jld2"
 
           save(file, "params", params, "typehist", typehist, "pn", pnhist, "pr", prhist, "degree", degreehist, "payoff", payoffhist, "network", finnet, "types", fintype, "pns", pnshist, "prs", prshist)
       end
@@ -197,7 +200,7 @@ function main()
       degreehist = degreehistAve/params.replicates
       payoffhist = payoffhistAve/params.replicates
 
-      file = ismatch(r"\.jl", parsed_args["file"]) ? parsed_args["file"] : parsed_args["file"]*".jld"
+      file = occursin(r"\.jl", parsed_args["file"]) ? parsed_args["file"] : parsed_args["file"]*".jld2"
 
       save(file, "params", params, "typehist", typehist, "pn", pnhist, "pr", prhist, "degree", degreehist, "payoff", payoffhist)
   end
